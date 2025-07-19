@@ -13,86 +13,69 @@ import { CheckInStatus, AttendanceReport } from '../../models/attendance.model';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="container-fluid mt-4">
-      <div class="row">
-        <div class="col-12">
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-              <h2>Welcome, {{ currentUser?.username }}!</h2>
-              <p class="text-muted mb-0">{{ currentUser?.role }} Dashboard</p>
+    <div class="dashboard-container">
+      <div class="container-fluid">
+        <!-- Welcome Header -->
+        <div class="welcome-card animate-fadeInUp">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h1 class="mb-2">Welcome back, {{ currentUser?.username }}! 👋</h1>
+              <p class="mb-0 opacity-75">{{ currentUser?.role }} Dashboard - {{ currentTime | date:'fullDate' }}</p>
             </div>
-            <div class="text-end">
-              <small class="text-muted">{{ currentTime | date:'medium' }}</small>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Admin Dashboard -->
-      <div *ngIf="isAdmin" class="row">
-        <div class="col-md-3 mb-4">
-          <div class="card bg-primary text-white">
-            <div class="card-body">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <h4>{{ totalEmployees }}</h4>
-                  <p class="mb-0">Total Employees</p>
-                </div>
-                <div class="align-self-center">
-                  <i class="fas fa-users fa-2x"></i>
-                </div>
+            <div class="col-md-4 text-end">
+              <div class="time-display">
+                <i class="fas fa-clock me-2"></i>
+                {{ currentTime | date:'HH:mm:ss' }}
               </div>
             </div>
           </div>
         </div>
 
-        <div class="col-md-3 mb-4">
-          <div class="card bg-success text-white">
-            <div class="card-body">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <h4>{{ todayAttendance }}</h4>
-                  <p class="mb-0">Present Today</p>
-                </div>
-                <div class="align-self-center">
-                  <i class="fas fa-check-circle fa-2x"></i>
-                </div>
+        <!-- Admin Dashboard -->
+        <div *ngIf="isAdmin" class="row animate-fadeInLeft">
+          <!-- Total Employees Card -->
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stats-card">
+              <div class="stats-icon bg-primary-gradient">
+                <i class="fas fa-users"></i>
               </div>
+              <div class="stats-number">{{ totalEmployees }}</div>
+              <div class="stats-label">Total Employees</div>
             </div>
           </div>
-        </div>
 
-        <div class="col-md-3 mb-4">
-          <div class="card bg-warning text-white">
-            <div class="card-body">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <h4>{{ weeklyAverage }}h</h4>
-                  <p class="mb-0">Avg. Weekly Hours</p>
-                </div>
-                <div class="align-self-center">
-                  <i class="fas fa-clock fa-2x"></i>
-                </div>
+          <!-- Present Today Card -->
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stats-card">
+              <div class="stats-icon bg-success-gradient">
+                <i class="fas fa-user-check"></i>
               </div>
+              <div class="stats-number">{{ todayAttendance }}</div>
+              <div class="stats-label">Present Today</div>
             </div>
           </div>
-        </div>
 
-        <div class="col-md-3 mb-4">
-          <div class="card bg-info text-white">
-            <div class="card-body">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <h4>{{ activeEmployees }}</h4>
-                  <p class="mb-0">Active Employees</p>
-                </div>
-                <div class="align-self-center">
-                  <i class="fas fa-user-check fa-2x"></i>
-                </div>
+          <!-- Average Hours Card -->
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stats-card">
+              <div class="stats-icon bg-warning-gradient">
+                <i class="fas fa-clock"></i>
               </div>
+              <div class="stats-number">{{ weeklyAverage }}h</div>
+              <div class="stats-label">Avg. Weekly Hours</div>
             </div>
           </div>
-        </div>
+
+          <!-- Active Employees Card -->
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stats-card">
+              <div class="stats-icon bg-info-gradient">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="stats-number">{{ activeEmployees }}</div>
+              <div class="stats-label">Active Employees</div>
+            </div>
+          </div>
 
         <div class="col-12">
           <div class="row">
@@ -225,19 +208,152 @@ import { CheckInStatus, AttendanceReport } from '../../models/attendance.model';
     </div>
   `,
   styles: [`
-    .card {
-      border-radius: 10px;
-      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    .dashboard-container {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding: 2rem 0;
     }
-    .card-header {
-      background-color: #f8f9fa;
-      border-bottom: 1px solid #dee2e6;
+    
+    .stats-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
     }
-    .btn {
-      border-radius: 6px;
+    
+    .stats-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
-    .fa-3x {
+    
+    .stats-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stats-number {
       font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stats-label {
+      color: #6c757d;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.875rem;
+    }
+    
+    .stats-icon {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      opacity: 0.8;
+    }
+    
+    .bg-primary-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .bg-success-gradient {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    .bg-warning-gradient {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .bg-info-gradient {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    }
+    
+    .welcome-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .quick-actions-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .action-btn {
+      background: white;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 1rem;
+      text-decoration: none;
+      color: #495057;
+      transition: all 0.3s ease;
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+    
+    .action-btn:hover {
+      border-color: #667eea;
+      color: #667eea;
+      transform: translateX(5px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+    }
+    
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+    
+    .status-success {
+      background: #28a745;
+      box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+    }
+    
+    .status-warning {
+      background: #ffc107;
+      box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+    }
+    
+    .time-display {
+      font-family: 'Courier New', monospace;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #667eea;
+    }
+    
+    .animate-pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
     }
   `]
 })
